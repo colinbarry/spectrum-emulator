@@ -1,0 +1,3 @@
+[submodule "extern/z80"]
+	path = extern/z80
+	url = https://github.com/colinbarry/z80
