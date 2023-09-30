@@ -81,6 +81,8 @@ static void cleanup(void)
     if (window)
         SDL_DestroyWindow(window);
 
+    spec_destruct(&spectrum);
+
     SDL_Quit();
 }
 
