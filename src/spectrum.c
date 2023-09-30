@@ -63,6 +63,7 @@ void spec_construct(struct Spectrum* self)
 void spec_destruct(struct Spectrum* self)
 {
     free(self->z80);
+    free(self->keyboard);
     free(self->memory);
 }
 
