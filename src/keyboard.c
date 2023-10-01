@@ -1,6 +1,7 @@
 #include "keyboard.h"
 
-enum Keys {
+enum Keys
+{
     skey_a,
     skey_b,
     skey_c,
@@ -91,13 +92,16 @@ static int keycode_to_skey(SDL_Keycode const keycode)
     }
 }
 
-static uint8_t pack_keypresses(struct Keyboard const* keyboard, int k0, int k1, int k2, int k3, int k4)
+static uint8_t pack_keypresses(struct Keyboard const* keyboard,
+                               int k0,
+                               int k1,
+                               int k2,
+                               int k3,
+                               int k4)
 {
-    return ~(keyboard->keys[k0]
-            | (keyboard->keys[k1] << 1)
-            | (keyboard->keys[k2] << 2)
-            | (keyboard->keys[k3] << 3)
-            | (keyboard->keys[k4] << 4));
+    return ~(keyboard->keys[k0] | (keyboard->keys[k1] << 1)
+             | (keyboard->keys[k2] << 2) | (keyboard->keys[k3] << 3)
+             | (keyboard->keys[k4] << 4));
 }
 
 //=============================================================================
@@ -109,23 +113,40 @@ void kb_construct(struct Keyboard* self)
 
 uint8_t kb_read(struct Keyboard const* self, uint16_t port)
 {
-    if (port == 0xfefe) {
+    if (port == 0xfefe)
+    {
         return pack_keypresses(self, skey_shift, skey_z, skey_x, skey_c, skey_v);
-    } else if (port == 0xfdfe) {
+    }
+    else if (port == 0xfdfe)
+    {
         return pack_keypresses(self, skey_a, skey_s, skey_d, skey_f, skey_g);
-    } else if (port == 0xfbfe) {
+    }
+    else if (port == 0xfbfe)
+    {
         return pack_keypresses(self, skey_q, skey_w, skey_e, skey_r, skey_t);
-    } else if (port == 0xf7fe) {
+    }
+    else if (port == 0xf7fe)
+    {
         return pack_keypresses(self, skey_1, skey_2, skey_3, skey_4, skey_5);
-    } else if (port == 0xeffe) {
+    }
+    else if (port == 0xeffe)
+    {
         return pack_keypresses(self, skey_0, skey_9, skey_8, skey_7, skey_6);
-    } else if (port == 0xdffe) {
+    }
+    else if (port == 0xdffe)
+    {
         return pack_keypresses(self, skey_p, skey_o, skey_i, skey_u, skey_y);
-    } else if (port == 0xbffe) {
+    }
+    else if (port == 0xbffe)
+    {
         return pack_keypresses(self, skey_enter, skey_l, skey_k, skey_j, skey_h);
-    } else if (port == 0x7ffe) {
+    }
+    else if (port == 0x7ffe)
+    {
         return pack_keypresses(self, skey_space, skey_sym, skey_m, skey_n, skey_b);
-    } else {
+    }
+    else
+    {
         return 0xff;
     }
 }

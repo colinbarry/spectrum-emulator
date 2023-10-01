@@ -1,12 +1,12 @@
-#include <stdio.h>
-#include "z80/z80.h"
-#include "spectrum.h"
-#include "display.h"
 #include "SDL.h"
+#include "display.h"
+#include "spectrum.h"
+#include "z80/z80.h"
+#include <stdio.h>
 
-SDL_Window *window;
-SDL_Renderer *renderer;
-SDL_Texture *texture;
+SDL_Window* window;
+SDL_Renderer* renderer;
+SDL_Texture* texture;
 
 struct Spectrum spectrum;
 
@@ -33,31 +33,27 @@ static void loop(void)
         SDL_Event e;
         while (SDL_PollEvent(&e))
         {
-            switch(e.type)
+            switch (e.type)
             {
-                case SDL_KEYDOWN:
-                {
-                   if (e.key.keysym.sym == SDLK_ESCAPE)
-                   {
-                       quit = 1;
+                case SDL_KEYDOWN: {
+                    if (e.key.keysym.sym == SDLK_ESCAPE)
+                    {
+                        quit = 1;
                     }
-                   else
-                   {
-                       spec_on_keydown(&spectrum, e.key.keysym.sym);
-                   }
+                    else
+                    {
+                        spec_on_keydown(&spectrum, e.key.keysym.sym);
+                    }
 
-                   break;
-                }
-
-                case SDL_KEYUP:
-                {
-                   spec_on_keyup(&spectrum, e.key.keysym.sym);
-                   break;
-                }
-
-                case SDL_QUIT:
-                    quit = 1;
                     break;
+                }
+
+                case SDL_KEYUP: {
+                    spec_on_keyup(&spectrum, e.key.keysym.sym);
+                    break;
+                }
+
+                case SDL_QUIT: quit = 1; break;
             }
         }
 
@@ -90,7 +86,7 @@ static void cleanup(void)
     SDL_Quit();
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     spec_construct(&spectrum);
     spec_load_rom(&spectrum, "./roms/48.rom");
@@ -103,19 +99,26 @@ int main(int argc, char **argv)
 
     atexit(cleanup);
 
-    window = SDL_CreateWindow("ZX Spectrum", 
-            SDL_WINDOWPOS_CENTERED,
-            SDL_WINDOWPOS_CENTERED,
-            display_width * 2,
-            display_height * 2,
-            0);
+    window = SDL_CreateWindow("ZX Spectrum",
+                              SDL_WINDOWPOS_CENTERED,
+                              SDL_WINDOWPOS_CENTERED,
+                              display_width * 2,
+                              display_height * 2,
+                              0);
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if(!renderer)
+    renderer = SDL_CreateRenderer(window,
+                                  -1,
+                                  SDL_RENDERER_ACCELERATED
+                                      | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer)
         fail("Could not create renderer");
 
     // @TODO can I query for render or window size?
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, display_width, display_height);
+    texture = SDL_CreateTexture(renderer,
+                                SDL_PIXELFORMAT_RGBA32,
+                                SDL_TEXTUREACCESS_STREAMING,
+                                display_width,
+                                display_height);
 
     loop();
 
