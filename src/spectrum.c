@@ -1,9 +1,12 @@
 #include "spectrum.h"
-#include "keyboard.h"
 #include "display.h"
+#include "keyboard.h"
 #include <z80/z80.h>
 
 static const int memory_capacity = 65536;
+static const int64_t clock_speed = 3500000;
+static const int frames_per_second = 50;
+static const int cycles_per_frame = clock_speed / frames_per_second;
 
 static uint8_t mem_load(struct Z80* z80, uint16_t const addr)
 {
@@ -52,6 +55,8 @@ void spec_construct(struct Spectrum* self)
 
     kb_construct(self->keyboard);
 
+    self->cycles_until_interrupt = cycles_per_frame;
+
     z80_init(self->z80);
     self->z80->userdata = self;
     self->z80->mem_load = &mem_load;
@@ -98,17 +103,30 @@ void spec_on_keyup(struct Spectrum* self, SDL_Keycode const key)
     kb_on_keyup(self->keyboard, key);
 }
 
-void spec_frame(struct Spectrum* self)
+void spec_run(struct Spectrum* self, int cycles)
 {
-    // @TODO for now, count 8000 steps as a "frame"
-    for (int i = 0; i < 8000; ++i) {
-        z80_step(self->z80);
+    while (cycles > 0)
+    {
+        int const step_cycles = z80_step(self->z80);
+        cycles -= step_cycles;
+        self->cycles_until_interrupt -= step_cycles;
+
+        if (self->cycles_until_interrupt <= 0)
+        {
+            // @TODO report cycles in handling interrupts
+            z80_interrupt(self->z80, 0);
+            self->cycles_until_interrupt += cycles_per_frame;
+        }
     }
-    z80_interrupt(self->z80, 0);
 }
 
 void spec_render_display(struct Spectrum* self, uint32_t* surface)
 {
     display_render(surface, self->memory, self->border_attr, self->frame >= 16);
     self->frame = (self->frame + 1) % 32;
+}
+
+int spec_cycles(float const seconds)
+{
+    return (int)(seconds * clock_speed);
 }

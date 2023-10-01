@@ -26,7 +26,7 @@ static void blit(void)
 static void loop(void)
 {
     int quit = 0;
-    int i;
+    uint64_t time = SDL_GetPerformanceCounter();
 
     while (!quit)
     {
@@ -61,8 +61,12 @@ static void loop(void)
             }
         }
 
-        spec_frame(&spectrum);
         blit();
+
+        uint64_t const now = SDL_GetPerformanceCounter();
+        float const delta = (now - time) / (float)SDL_GetPerformanceFrequency();
+        spec_run(&spectrum, spec_cycles(delta));
+        time = now;
     }
 }
 
