@@ -23,22 +23,20 @@ static void mem_store(struct Z80* z80, uint16_t const addr, uint8_t const value)
 static uint8_t port_load(struct Z80* z80, uint16_t const port)
 {
     struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
-    if (port == 0xfefe || port == 0xfdfe || port == 0xfbfe || port == 0xf7fe
-        || port == 0xeffe || port == 0xdffe || port == 0xbffe || port == 0x7ffe)
+    if ((port & 0x01) == 0)
     {
         return kb_read(spectrum->keyboard, port);
     }
     else
     {
-        return 0xff;
+        return 0xbf;
     }
 }
 
 static void port_store(struct Z80* z80, uint16_t port, uint8_t const val)
 {
     struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
-    if (port == 0xfe)
-    {
+    if ((port & 0x01) == 0)
         spectrum->border_attr = val & 0x07;
     }
 }

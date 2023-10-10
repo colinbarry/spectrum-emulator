@@ -113,35 +113,36 @@ void kb_construct(struct Keyboard* self)
 
 uint8_t kb_read(struct Keyboard const* self, uint16_t port)
 {
-    if (port == 0xfefe)
+    uint8_t const row = port >> 8;
+    if (row == 0xfe)
     {
         return pack_keypresses(self, skey_shift, skey_z, skey_x, skey_c, skey_v);
     }
-    else if (port == 0xfdfe)
+    else if (row == 0xfd)
     {
         return pack_keypresses(self, skey_a, skey_s, skey_d, skey_f, skey_g);
     }
-    else if (port == 0xfbfe)
+    else if (row == 0xfb)
     {
         return pack_keypresses(self, skey_q, skey_w, skey_e, skey_r, skey_t);
     }
-    else if (port == 0xf7fe)
+    else if (row == 0xf7)
     {
         return pack_keypresses(self, skey_1, skey_2, skey_3, skey_4, skey_5);
     }
-    else if (port == 0xeffe)
+    else if (row == 0xef)
     {
         return pack_keypresses(self, skey_0, skey_9, skey_8, skey_7, skey_6);
     }
-    else if (port == 0xdffe)
+    else if (row == 0xdf)
     {
         return pack_keypresses(self, skey_p, skey_o, skey_i, skey_u, skey_y);
     }
-    else if (port == 0xbffe)
+    else if (row == 0xbf)
     {
         return pack_keypresses(self, skey_enter, skey_l, skey_k, skey_j, skey_h);
     }
-    else if (port == 0x7ffe)
+    else if (row == 0x7f)
     {
         return pack_keypresses(self, skey_space, skey_sym, skey_m, skey_n, skey_b);
     }
