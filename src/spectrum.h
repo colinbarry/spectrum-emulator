@@ -6,11 +6,13 @@
 
 struct Keyboard;
 struct Z80;
+struct Tap;
 
 struct Spectrum {
     uint8_t* memory;
     struct Keyboard* keyboard;
     struct Z80* z80;
+    struct Tap* tap;
     int frame;
     int cycles_until_interrupt;
     int8_t border_attr;

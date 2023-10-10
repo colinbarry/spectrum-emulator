@@ -1,6 +1,7 @@
 #include "SDL.h"
 #include "display.h"
 #include "spectrum.h"
+#include "tap-loader.h"
 #include "z80/z80.h"
 #include <stdio.h>
 
@@ -88,16 +89,23 @@ static void cleanup(void)
 
 int main(int argc, char** argv)
 {
+    atexit(cleanup);
+
     spec_construct(&spectrum);
     spec_load_rom(&spectrum, "./roms/48.rom");
+
+    // @TODO make LOAD a method on spectrum
+    if (!tap_construct(spectrum.tap, "./images/MANIC.TAP"))
+    {
+        puts("Could not create TAP image");
+        exit(EXIT_FAILURE);
+    }
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         puts("cannot init video\n");
         exit(EXIT_FAILURE);
     }
-
-    atexit(cleanup);
 
     window = SDL_CreateWindow("ZX Spectrum",
                               SDL_WINDOWPOS_CENTERED,

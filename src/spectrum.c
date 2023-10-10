@@ -1,6 +1,7 @@
 #include "spectrum.h"
 #include "display.h"
 #include "keyboard.h"
+#include "tap-loader.h"
 #include <z80/z80.h>
 
 static const int memory_capacity = 65536;
@@ -38,6 +39,39 @@ static void port_store(struct Z80* z80, uint16_t port, uint8_t const val)
     struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
     if ((port & 0x01) == 0)
         spectrum->border_attr = val & 0x07;
+}
+
+static uint8_t trap(struct Z80* z80, uint16_t addr, uint8_t const opcode)
+{
+    if (addr == 0x056b && opcode == 0xc0)
+    {
+        struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
+        uint8_t const block_type = z80->ap;
+        uint16_t const addr = z80->ix;
+        uint16_t const length = z80->de;
+
+        int const success = tap_load_next_block(spectrum->tap,
+                                                block_type,
+                                                addr,
+                                                length,
+                                                spectrum->memory);
+
+        // @TODO error handling!
+        if (success)
+        {
+            z80->f |= 0x01; // @TODO for success
+            z80->pc = 0x05e2;
+        }
+        else
+        {
+            puts("ERR");
+            z80->f &= ~0x01;
+        }
+        return 1;
+    }
+    else
+    {
+        return 0;
     }
 }
 
@@ -47,6 +81,7 @@ void spec_construct(struct Spectrum* self)
 {
     self->memory = calloc(memory_capacity, sizeof(uint8_t));
     self->keyboard = malloc(sizeof(*self->keyboard));
+    self->tap = malloc(sizeof(*self->tap));
     self->z80 = malloc(sizeof(*self->z80));
 
     kb_construct(self->keyboard);
@@ -59,10 +94,12 @@ void spec_construct(struct Spectrum* self)
     self->z80->mem_store = &mem_store;
     self->z80->port_load = &port_load;
     self->z80->port_store = &port_store;
+    self->z80->trap = &trap;
 }
 
 void spec_destruct(struct Spectrum* self)
 {
+    free(self->tap);
     free(self->z80);
     free(self->keyboard);
     free(self->memory);
@@ -110,7 +147,6 @@ void spec_run(struct Spectrum* self, int cycles)
 
         if (self->cycles_until_interrupt <= 0)
         {
-            // @TODO report cycles in handling interrupts
             z80_interrupt(self->z80, 0);
             self->cycles_until_interrupt += cycles_per_frame;
         }
