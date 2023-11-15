@@ -114,42 +114,41 @@ void kb_construct(struct Keyboard* self)
 uint8_t kb_read(struct Keyboard const* self, uint16_t port)
 {
     uint8_t const row = port >> 8;
-    if (row == 0xfe)
+    uint8_t result = 0xff;
+    if (~row & 0x01)
     {
-        return pack_keypresses(self, skey_shift, skey_z, skey_x, skey_c, skey_v);
+        result &= pack_keypresses(self, skey_shift, skey_z, skey_x, skey_c, skey_v);
     }
-    else if (row == 0xfd)
+    if (~row & 0x02)
     {
-        return pack_keypresses(self, skey_a, skey_s, skey_d, skey_f, skey_g);
+        result &= pack_keypresses(self, skey_a, skey_s, skey_d, skey_f, skey_g);
     }
-    else if (row == 0xfb)
+    if (~row & 0x04)
     {
-        return pack_keypresses(self, skey_q, skey_w, skey_e, skey_r, skey_t);
+        result &= pack_keypresses(self, skey_q, skey_w, skey_e, skey_r, skey_t);
     }
-    else if (row == 0xf7)
+    if (~row & 0x08)
     {
-        return pack_keypresses(self, skey_1, skey_2, skey_3, skey_4, skey_5);
+        result &= pack_keypresses(self, skey_1, skey_2, skey_3, skey_4, skey_5);
     }
-    else if (row == 0xef)
+    if (~row & 0x10)
     {
-        return pack_keypresses(self, skey_0, skey_9, skey_8, skey_7, skey_6);
+        result &= pack_keypresses(self, skey_0, skey_9, skey_8, skey_7, skey_6);
     }
-    else if (row == 0xdf)
+    if (~row & 0x20)
     {
-        return pack_keypresses(self, skey_p, skey_o, skey_i, skey_u, skey_y);
+        result &= pack_keypresses(self, skey_p, skey_o, skey_i, skey_u, skey_y);
     }
-    else if (row == 0xbf)
+    if (~row & 0x40)
     {
-        return pack_keypresses(self, skey_enter, skey_l, skey_k, skey_j, skey_h);
+        result &= pack_keypresses(self, skey_enter, skey_l, skey_k, skey_j, skey_h);
     }
-    else if (row == 0x7f)
+    if (~row & 0x80)
     {
-        return pack_keypresses(self, skey_space, skey_sym, skey_m, skey_n, skey_b);
+        result &= pack_keypresses(self, skey_space, skey_sym, skey_m, skey_n, skey_b);
     }
-    else
-    {
-        return 0xff;
-    }
+
+    return result;
 }
 
 void kb_on_keydown(struct Keyboard* self, SDL_Keycode const key)
