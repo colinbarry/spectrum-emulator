@@ -1,10 +1,11 @@
 #ifndef SPECTRUM_KEYBOARD_H
 #define SPECTRUM_KEYBOARD_H
 
-#include <stdint.h>
 #include "SDL.h"
+#include <stdint.h>
 
-struct Keyboard {
+struct Keyboard
+{
     int keys[40];
 };
 

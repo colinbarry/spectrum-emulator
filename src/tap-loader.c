@@ -53,7 +53,7 @@ static void trace_blocks(uint8_t const* data, size_t const length)
     }
 }
 
-int tap_construct(struct Tap* tap, char const* filename)
+bool tap_construct(struct Tap* tap, char const* filename)
 {
     memset(tap, 0, sizeof(*tap));
 
@@ -61,7 +61,7 @@ int tap_construct(struct Tap* tap, char const* filename)
     if (!fp)
     {
         printf("cannot load \"%s\"\n", filename);
-        return 0;
+        return false;
     }
 
     fseek(fp, 0, SEEK_END);
@@ -77,7 +77,7 @@ int tap_construct(struct Tap* tap, char const* filename)
 
     trace_blocks(tap->data, len);
 
-    return 1;
+    return true;
 }
 
 void tap_destruct(struct Tap* tap)

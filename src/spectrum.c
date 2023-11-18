@@ -18,7 +18,8 @@ static uint8_t mem_load(struct Z80* z80, uint16_t const addr)
 static void mem_store(struct Z80* z80, uint16_t const addr, uint8_t const value)
 {
     struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
-    (spectrum->memory)[addr] = value;
+    if (addr >= 0x4000)
+        (spectrum->memory)[addr] = value;
 }
 
 static uint8_t port_load(struct Z80* z80, uint16_t const port)
@@ -46,6 +47,9 @@ static uint8_t trap(struct Z80* z80, uint16_t addr, uint8_t const opcode)
     if (addr == 0x056b && opcode == 0xc0)
     {
         struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
+        if (!spectrum->tap)
+            return 1;
+
         uint8_t const block_type = z80->ap;
         uint16_t const addr = z80->ix;
         uint16_t const length = z80->de;
@@ -67,6 +71,7 @@ static uint8_t trap(struct Z80* z80, uint16_t addr, uint8_t const opcode)
             puts("ERR");
             z80->f &= ~0x01;
         }
+
         return 1;
     }
     else
@@ -81,7 +86,7 @@ void spec_construct(struct Spectrum* self)
 {
     self->memory = calloc(memory_capacity, sizeof(uint8_t));
     self->keyboard = malloc(sizeof(*self->keyboard));
-    self->tap = malloc(sizeof(*self->tap));
+    self->tap = NULL;
     self->z80 = malloc(sizeof(*self->z80));
 
     kb_construct(self->keyboard);
@@ -103,6 +108,27 @@ void spec_destruct(struct Spectrum* self)
     free(self->z80);
     free(self->keyboard);
     free(self->memory);
+}
+
+bool spec_insert_tape(struct Spectrum* self, char const* filename)
+{
+    if (self->tap)
+    {
+        tap_destruct(self->tap);
+        free(self->tap);
+    }
+
+    self->tap = malloc(sizeof(*self->tap));
+    if (tap_construct(self->tap, filename))
+    {
+        return true;
+    }
+    else
+    {
+        free(self->tap);
+        self->tap = NULL;
+        return false;
+    }
 }
 
 void spec_load_rom(struct Spectrum* self, char const* filename)
