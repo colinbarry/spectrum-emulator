@@ -53,7 +53,7 @@ void display_render(uint32_t* surface,
         {
             uint32_t* wr = surface + display_width * border_size + border_size
                            + r * (display_width * 8) + c * 8;
-            uint8_t const attr = memory[0x5800 + r * 0x20 + c];
+            uint8_t const attr = memory[0x1800 + r * 0x20 + c];
 
             uint32_t irgb = colour(attr);
             uint32_t prgb = colour(attr >> 3);
@@ -68,15 +68,15 @@ void display_render(uint32_t* surface,
             uint16_t addr;
             if (r < 8)
             {
-                addr = 0x4000 + r * 0x20 + c;
+                addr = 0x0000 + r * 0x20 + c;
             }
             else if (r < 16)
             {
-                addr = 0x4800 + (r % 8) * 0x20 + c;
+                addr = 0x0800 + (r % 8) * 0x20 + c;
             }
             else
             {
-                addr = 0x5000 + (r % 8) * 0x20 + c;
+                addr = 0x1000 + (r % 8) * 0x20 + c;
             }
 
             for (int i = 0; i < 8; ++i)

@@ -1,4 +1,5 @@
 #include "tap-loader.h"
+#include "memory.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,7 +90,7 @@ int tap_load_next_block(struct Tap* tap,
                         uint8_t type,
                         uint16_t addr,
                         uint16_t data_length,
-                        uint8_t* memory)
+                        struct Memory* memory)
 {
     uint8_t const* block = tap->current;
     uint16_t block_length = readw(block);
@@ -120,7 +121,7 @@ int tap_load_next_block(struct Tap* tap,
         return 1;
     }
 
-    memcpy(memory + addr, block + 1, data_length);
+    mem_write_block(memory, addr, block + 1, data_length);
 
     printf("LOADED BLOCK: 0x%04x <- 0x%04x\n", addr, data_length);
 

@@ -8,10 +8,18 @@
 struct Keyboard;
 struct Z80;
 struct Tap;
+struct Memory;
+
+enum Model
+{
+    s48,
+    s128
+};
 
 struct Spectrum
 {
-    uint8_t* memory;
+    enum Model model;
+    struct Memory* memory;
     struct Keyboard* keyboard;
     struct Z80* z80;
     struct Tap* tap;
@@ -20,10 +28,10 @@ struct Spectrum
     int8_t border_attr;
 };
 
-void spec_construct(struct Spectrum* self);
+void spec_construct(struct Spectrum* self, enum Model model);
 void spec_destruct(struct Spectrum* self);
 
-void spec_load_rom(struct Spectrum* self, char const* filename);
+void spec_load_rom(struct Spectrum* self, int page, char const* filename);
 
 bool spec_insert_tape(struct Spectrum* self, char const* filename);
 

@@ -91,8 +91,17 @@ int main(int argc, char** argv)
 {
     atexit(cleanup);
 
-    spec_construct(&spectrum);
-    spec_load_rom(&spectrum, "./roms/48.rom");
+    if (0)
+    {
+        spec_construct(&spectrum, s48);
+        spec_load_rom(&spectrum, 0, "./roms/48.rom");
+    }
+    else
+    {
+        spec_construct(&spectrum, s128);
+        spec_load_rom(&spectrum, 0, "./roms/128-0.rom");
+        spec_load_rom(&spectrum, 1, "./roms/128-1.rom");
+    }
 
     if (argc >= 2)
     {

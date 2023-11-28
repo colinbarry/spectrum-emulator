@@ -1,10 +1,10 @@
 #include "spectrum.h"
 #include "display.h"
 #include "keyboard.h"
+#include "memory.h"
 #include "tap-loader.h"
 #include <z80/z80.h>
 
-static const int memory_capacity = 65536;
 static const int64_t clock_speed = 3500000;
 static const int frames_per_second = 50;
 static const int cycles_per_frame = clock_speed / frames_per_second;
@@ -12,14 +12,13 @@ static const int cycles_per_frame = clock_speed / frames_per_second;
 static uint8_t mem_load(struct Z80* z80, uint16_t const addr)
 {
     struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
-    return (spectrum->memory)[addr];
+    return mem_read(spectrum->memory, addr);
 }
 
 static void mem_store(struct Z80* z80, uint16_t const addr, uint8_t const value)
 {
     struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
-    if (addr >= 0x4000)
-        (spectrum->memory)[addr] = value;
+    mem_write(spectrum->memory, addr, value);
 }
 
 static uint8_t port_load(struct Z80* z80, uint16_t const port)
@@ -39,7 +38,13 @@ static void port_store(struct Z80* z80, uint16_t port, uint8_t const val)
 {
     struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
     if ((port & 0x01) == 0)
+    {
         spectrum->border_attr = val & 0x07;
+    }
+    else if (spectrum->model == s128 && (port & 0x02) == 0 && (port & 0x8000) == 0)
+    {
+        mem_page(spectrum->memory, val);
+    }
 }
 
 static uint8_t trap(struct Z80* z80, uint16_t addr, uint8_t const opcode)
@@ -82,12 +87,15 @@ static uint8_t trap(struct Z80* z80, uint16_t addr, uint8_t const opcode)
 
 //=============================================================================
 
-void spec_construct(struct Spectrum* self)
+void spec_construct(struct Spectrum* self, enum Model const model)
 {
-    self->memory = calloc(memory_capacity, sizeof(uint8_t));
+    self->model = model;
+    self->memory = malloc(sizeof(*self->memory));
     self->keyboard = malloc(sizeof(*self->keyboard));
     self->tap = NULL;
     self->z80 = malloc(sizeof(*self->z80));
+
+    mem_construct(self->memory, model == s128);
 
     kb_construct(self->keyboard);
 
@@ -104,6 +112,7 @@ void spec_construct(struct Spectrum* self)
 
 void spec_destruct(struct Spectrum* self)
 {
+    mem_destruct(self->memory);
     free(self->tap);
     free(self->z80);
     free(self->keyboard);
@@ -131,7 +140,7 @@ bool spec_insert_tape(struct Spectrum* self, char const* filename)
     }
 }
 
-void spec_load_rom(struct Spectrum* self, char const* filename)
+void spec_load_rom(struct Spectrum* self, int const page, char const* filename)
 {
     FILE* romfile;
     int length;
@@ -145,11 +154,12 @@ void spec_load_rom(struct Spectrum* self, char const* filename)
     fseek(romfile, 0, SEEK_END);
     length = ftell(romfile);
     fseek(romfile, 0, SEEK_SET);
-    printf("loading rom of size %i\n", length);
 
-    if (length > memory_capacity)
-        length = memory_capacity;
-    fread(self->memory, 1, length, romfile);
+    uint8_t* buf = malloc(length);
+    fread(buf, 1, length, romfile);
+    mem_set_rom(self->memory, page & 0x01, buf, length);
+    free(buf);
+
     fclose(romfile);
 }
 
@@ -181,7 +191,10 @@ void spec_run(struct Spectrum* self, int cycles)
 
 void spec_render_display(struct Spectrum* self, uint32_t* surface)
 {
-    display_render(surface, self->memory, self->border_attr, self->frame >= 16);
+    display_render(surface,
+                   mem_screen(self->memory),
+                   self->border_attr,
+                   self->frame >= 16);
     self->frame = (self->frame + 1) % 32;
 }
 

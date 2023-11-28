@@ -10,7 +10,7 @@ static const int display_width = paper_width + border_size + border_size;
 static const int display_height = paper_height + border_size + border_size;
 
 void display_render(uint32_t* surface,
-                    uint8_t const* memory,
+                    uint8_t const* bank,
                     uint8_t border_attr,
                     int invert_flash);
 
