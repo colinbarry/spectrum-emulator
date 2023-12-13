@@ -72,7 +72,7 @@ void mem_page(struct Memory* self, uint8_t const val)
 {
     self->map[3] = self->ram_banks[val & 0x07];
     self->map[0] = self->rom_banks[(val & 0x10) ? 1 : 0];
-    //self->screen = self->ram_banks[(val & 0x08) ? 5 : 7];
+    self->screen = self->ram_banks[(val & 0x08) ? 7 : 5];
 }
 
 uint8_t const* mem_screen(struct Memory* self)
