@@ -42,7 +42,10 @@ void mem_destruct(struct Memory* self)
         free(self->ram_banks[i]);
 }
 
-void mem_set_rom(struct Memory* self, int const page, uint8_t const* data, uint16_t const length)
+void mem_set_rom(struct Memory* self,
+                 int const page,
+                 uint8_t const* data,
+                 uint16_t const length)
 {
     assert(length <= PAGE_SIZE);
     assert(self->rom_banks[page]);

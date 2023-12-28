@@ -7,7 +7,7 @@
 
 struct Keyboard;
 struct Z80;
-struct Tap;
+struct Tape;
 struct Memory;
 
 enum Model
@@ -22,7 +22,7 @@ struct Spectrum
     struct Memory* memory;
     struct Keyboard* keyboard;
     struct Z80* z80;
-    struct Tap* tap;
+    struct Tape* tape;
     int frame;
     int cycles_until_interrupt;
     int8_t border_attr;

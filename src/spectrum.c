@@ -52,18 +52,18 @@ static uint8_t trap(struct Z80* z80, uint16_t addr, uint8_t const opcode)
     if (addr == 0x056b && opcode == 0xc0)
     {
         struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
-        if (!spectrum->tap)
+        if (!spectrum->tape)
             return 1;
 
         uint8_t const block_type = z80->ap;
         uint16_t const addr = z80->ix;
         uint16_t const length = z80->de;
 
-        int const success = tap_load_next_block(spectrum->tap,
-                                                block_type,
-                                                addr,
-                                                length,
-                                                spectrum->memory);
+        int const success = tape_load_next_block(spectrum->tape,
+                                                 block_type,
+                                                 addr,
+                                                 length,
+                                                 spectrum->memory);
 
         // @TODO error handling!
         if (success)
@@ -92,7 +92,7 @@ void spec_construct(struct Spectrum* self, enum Model const model)
     self->model = model;
     self->memory = malloc(sizeof(*self->memory));
     self->keyboard = malloc(sizeof(*self->keyboard));
-    self->tap = NULL;
+    self->tape = NULL;
     self->z80 = malloc(sizeof(*self->z80));
 
     mem_construct(self->memory, model == s128);
@@ -113,7 +113,8 @@ void spec_construct(struct Spectrum* self, enum Model const model)
 void spec_destruct(struct Spectrum* self)
 {
     mem_destruct(self->memory);
-    free(self->tap);
+    if (self->tape)
+        tape_destroy(self->tape);
     free(self->z80);
     free(self->keyboard);
     free(self->memory);
@@ -121,23 +122,14 @@ void spec_destruct(struct Spectrum* self)
 
 bool spec_insert_tape(struct Spectrum* self, char const* filename)
 {
-    if (self->tap)
+    if (self->tape)
     {
-        tap_destruct(self->tap);
-        free(self->tap);
+        tape_destroy(self->tape);
+        self->tape = NULL;
     }
 
-    self->tap = malloc(sizeof(*self->tap));
-    if (tap_construct(self->tap, filename))
-    {
-        return true;
-    }
-    else
-    {
-        free(self->tap);
-        self->tap = NULL;
-        return false;
-    }
+    self->tape = tape_make(filename);
+    return self->tape;
 }
 
 void spec_load_rom(struct Spectrum* self, int const page, char const* filename)
