@@ -1,6 +1,5 @@
 #include "tap-format.h"
-#include "memory.h"
-#include "tap-loader.h"
+#include "tape-loader.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,13 +62,10 @@ static void trace_blocks(uint8_t const* data, size_t const length)
     }
 }
 
-static int load_next_block(struct Tape* tape,
-                           uint8_t type,
-                           uint16_t addr,
-                           uint16_t data_length,
-                           struct Memory* memory)
+static struct TapeBlock get_next_block(struct Tape* tape)
 {
     struct Tap* tap = (struct Tap*)tape;
+
     uint8_t const* block = tap->current;
     uint16_t block_length = readw(block);
     block += 2;
@@ -81,13 +77,6 @@ static int load_next_block(struct Tape* tape,
     }
 
     uint8_t const block_type = *block;
-    if (block_type != type || block_length != data_length + 2)
-    {
-        printf("LEN ERR: Expected 0x%04x, got 0x%04x", data_length, block_length);
-        exit(0);
-        return 0;
-    }
-
     uint8_t computed_chk = 0;
     for (int i = 0; i < block_length - 1; ++i)
         computed_chk ^= block[i];
@@ -96,14 +85,11 @@ static int load_next_block(struct Tape* tape,
     if (computed_chk != expected_chk)
     {
         printf("CHKSUM ERR: Expected 0x%02x, got 0x%02x", expected_chk, computed_chk);
-        return 1;
+        return invalid_block();
+        ;
     }
 
-    mem_write_block(memory, addr, block + 1, data_length);
-
-    printf("LOADED BLOCK: 0x%04x <- 0x%04x\n", addr, data_length);
-
-    return 1;
+    return valid_block(block_type, block_length - 2, block + 1);
 }
 
 static void destroy(struct Tape* tape)
@@ -135,7 +121,7 @@ struct Tape* tap_make(char const* filename)
     fread(tap->data, 1, len, fp);
     fclose(fp);
 
-    tap->tape.load_next_block = load_next_block;
+    tap->tape.get_next_block = get_next_block;
     tap->tape.destroy = destroy;
 
     return &tap->tape;

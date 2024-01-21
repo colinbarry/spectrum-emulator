@@ -1,7 +1,7 @@
 #include "SDL.h"
 #include "display.h"
 #include "spectrum.h"
-#include "tap-loader.h"
+#include "tape-loader.h"
 #include "z80/z80.h"
 #include <stdio.h>
 
