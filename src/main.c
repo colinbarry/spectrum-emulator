@@ -121,8 +121,8 @@ int main(int argc, char** argv)
     window = SDL_CreateWindow("ZX Spectrum",
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
-                              display_width * 3,
-                              display_height * 3,
+                              DISPLAY_WIDTH * 3,
+                              DISPLAY_HEIGHT * 3,
                               0);
 
     renderer = SDL_CreateRenderer(window,
@@ -136,8 +136,8 @@ int main(int argc, char** argv)
     texture = SDL_CreateTexture(renderer,
                                 SDL_PIXELFORMAT_RGBA32,
                                 SDL_TEXTUREACCESS_STREAMING,
-                                display_width,
-                                display_height);
+                                DISPLAY_WIDTH,
+                                DISPLAY_HEIGHT);
 
     loop();
 

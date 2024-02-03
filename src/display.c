@@ -10,7 +10,7 @@ static uint32_t colour(uint8_t const attr)
 
 static void fill_rect(uint32_t* pixels, uint32_t const colour, int x, int y, int w, int h)
 {
-    uint32_t* wr = pixels + y * display_width + x;
+    uint32_t* wr = pixels + y * DISPLAY_WIDTH + x;
 
     for (int r = 0; r < h; ++r)
     {
@@ -19,7 +19,7 @@ static void fill_rect(uint32_t* pixels, uint32_t const colour, int x, int y, int
             *wr++ = colour;
         }
 
-        wr += display_width - w;
+        wr += DISPLAY_WIDTH - w;
     }
 }
 
@@ -32,27 +32,27 @@ void display_render(uint32_t* surface,
 {
     uint32_t const brgb = colour(border_attr);
 
-    fill_rect(surface, brgb, 0, 0, display_width, border_size);
-    fill_rect(surface, brgb, 0, display_height - border_size, display_width, border_size);
+    fill_rect(surface, brgb, 0, 0, DISPLAY_WIDTH, BORDER_SIZE);
+    fill_rect(surface, brgb, 0, DISPLAY_HEIGHT - BORDER_SIZE, DISPLAY_WIDTH, BORDER_SIZE);
     fill_rect(surface,
               brgb,
               0,
-              border_size,
-              border_size,
-              display_height - border_size - border_size);
+              BORDER_SIZE,
+              BORDER_SIZE,
+              DISPLAY_HEIGHT - BORDER_SIZE - BORDER_SIZE);
     fill_rect(surface,
               brgb,
-              display_width - border_size,
-              border_size,
-              border_size,
-              display_height - border_size - border_size);
+              DISPLAY_WIDTH - BORDER_SIZE,
+              BORDER_SIZE,
+              BORDER_SIZE,
+              DISPLAY_HEIGHT - BORDER_SIZE - BORDER_SIZE);
 
     for (int r = 0; r < 24; ++r)
     {
         for (int c = 0; c < 32; ++c)
         {
-            uint32_t* wr = surface + display_width * border_size + border_size
-                           + r * (display_width * 8) + c * 8;
+            uint32_t* wr = surface + DISPLAY_WIDTH * BORDER_SIZE + BORDER_SIZE
+                           + r * (DISPLAY_WIDTH * 8) + c * 8;
             uint8_t const attr = memory[0x1800 + r * 0x20 + c];
 
             uint32_t irgb = colour(attr);
@@ -90,7 +90,7 @@ void display_render(uint32_t* surface,
                 }
 
                 addr += 0x100;
-                wr += display_width - 8;
+                wr += DISPLAY_WIDTH - 8;
             }
         }
     }

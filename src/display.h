@@ -3,11 +3,11 @@
 
 #include <stdint.h>
 
-static const int border_size = 32;
-static const int paper_width = 256;
-static const int paper_height = 192;
-static const int display_width = paper_width + border_size + border_size;
-static const int display_height = paper_height + border_size + border_size;
+#define BORDER_SIZE 32
+#define PAPER_WIDTH 256
+#define PAPER_HEIGHT 192
+#define DISPLAY_WIDTH (PAPER_WIDTH + BORDER_SIZE + BORDER_SIZE)
+#define DISPLAY_HEIGHT (PAPER_HEIGHT + BORDER_SIZE + BORDER_SIZE)
 
 void display_render(uint32_t* surface,
                     uint8_t const* bank,

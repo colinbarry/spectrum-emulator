@@ -8,7 +8,7 @@
 
 static const int64_t clock_speed = 3500000;
 static const int frames_per_second = 50;
-static const int cycles_per_frame = clock_speed / frames_per_second;
+#define CYCLES_PER_FRAME (clock_speed / frames_per_second)
 
 static uint8_t mem_load(struct Z80* z80, uint16_t const addr)
 {
@@ -100,7 +100,7 @@ void spec_construct(struct Spectrum* self, enum Model const model)
 
     kb_construct(self->keyboard);
 
-    self->cycles_until_interrupt = cycles_per_frame;
+    self->cycles_until_interrupt = CYCLES_PER_FRAME;
 
     z80_init(self->z80);
     self->z80->userdata = self;
@@ -177,7 +177,7 @@ void spec_run(struct Spectrum* self, int cycles)
         if (self->cycles_until_interrupt <= 0)
         {
             z80_interrupt(self->z80, 0);
-            self->cycles_until_interrupt += cycles_per_frame;
+            self->cycles_until_interrupt += CYCLES_PER_FRAME;
         }
     }
 }
