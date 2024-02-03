@@ -3,6 +3,7 @@
 #include "keyboard.h"
 #include "memory.h"
 #include "tape-loader.h"
+#include <stdio.h>
 #include <z80/z80.h>
 
 static const int64_t clock_speed = 3500000;
