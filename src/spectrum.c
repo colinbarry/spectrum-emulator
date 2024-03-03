@@ -156,14 +156,69 @@ void spec_load_rom(struct Spectrum* self, int const page, char const* filename)
     fclose(romfile);
 }
 
+/* Returns the key code for the given keypress, or -1 if there is no
+ such key on the Spectrum
+ */
+static int convert_keycode(SDL_Keycode const keycode)
+{
+    switch (keycode)
+    {
+        case SDLK_0: return spk_0;
+        case SDLK_1: return spk_1;
+        case SDLK_2: return spk_2;
+        case SDLK_3: return spk_3;
+        case SDLK_4: return spk_4;
+        case SDLK_5: return spk_5;
+        case SDLK_6: return spk_6;
+        case SDLK_7: return spk_7;
+        case SDLK_8: return spk_8;
+        case SDLK_9: return spk_9;
+        case SDLK_a: return spk_a;
+        case SDLK_b: return spk_b;
+        case SDLK_c: return spk_c;
+        case SDLK_d: return spk_d;
+        case SDLK_e: return spk_e;
+        case SDLK_f: return spk_f;
+        case SDLK_g: return spk_g;
+        case SDLK_h: return spk_h;
+        case SDLK_i: return spk_i;
+        case SDLK_j: return spk_j;
+        case SDLK_k: return spk_k;
+        case SDLK_l: return spk_l;
+        case SDLK_m: return spk_m;
+        case SDLK_n: return spk_n;
+        case SDLK_o: return spk_o;
+        case SDLK_p: return spk_p;
+        case SDLK_q: return spk_q;
+        case SDLK_r: return spk_r;
+        case SDLK_s: return spk_s;
+        case SDLK_t: return spk_t;
+        case SDLK_u: return spk_u;
+        case SDLK_v: return spk_v;
+        case SDLK_w: return spk_w;
+        case SDLK_x: return spk_x;
+        case SDLK_y: return spk_y;
+        case SDLK_z: return spk_z;
+        case SDLK_RETURN: return spk_enter;
+        case SDLK_SPACE: return spk_space;
+        case SDLK_LSHIFT: return spk_caps_shift;
+        case SDLK_LCTRL: return spk_symbol_shift;
+        default: return -1;
+    }
+}
+
 void spec_on_keydown(struct Spectrum* self, SDL_Keycode const key)
 {
-    kb_on_keydown(self->keyboard, key);
+    int const skey = convert_keycode(key);
+    if (skey != -1)
+        kb_on_keydown(self->keyboard, (enum SpectrumKey)skey);
 }
 
 void spec_on_keyup(struct Spectrum* self, SDL_Keycode const key)
 {
-    kb_on_keyup(self->keyboard, key);
+    int const skey = convert_keycode(key);
+    if (skey != -1)
+        kb_on_keyup(self->keyboard, (enum SpectrumKey)skey);
 }
 
 void spec_run(struct Spectrum* self, int cycles)
