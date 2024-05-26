@@ -7,24 +7,24 @@
 
 struct TzxBlock
 {
-    uint8_t* begin;
-    uint8_t* end;
+    uint8_t *begin;
+    uint8_t *end;
 };
 
 struct Tzx
 {
     struct Tape tape;
-    uint8_t* data;
-    uint8_t const* end;
-    uint8_t const* current;
+    uint8_t *data;
+    uint8_t const *end;
+    uint8_t const *current;
 };
 
-static uint8_t readb(uint8_t const* data)
+static uint8_t readb(uint8_t const *data)
 {
     return *data;
 }
 
-static uint16_t readw(uint8_t const* data)
+static uint16_t readw(uint8_t const *data)
 {
     return *data | *(data + 1) << 8;
 }
@@ -34,11 +34,11 @@ static bool is_info_block(uint8_t const id)
     return id == 0x32;
 }
 
-static struct TapeBlock get_next_block(struct Tape* tape)
+static struct TapeBlock get_next_block(struct Tape *tape)
 {
-    struct Tzx* tzx = (struct Tzx*)tape;
-    uint8_t const* block = tzx->current;
-    uint8_t const* const offset = block;
+    struct Tzx *tzx = (struct Tzx *)tape;
+    uint8_t const *block = tzx->current;
+    uint8_t const *const offset = block;
 
     uint8_t block_id = readb(block);
     ++block;
@@ -77,14 +77,14 @@ static struct TapeBlock get_next_block(struct Tape* tape)
     return tb;
 }
 
-static void destroy(struct Tape* tape)
+static void destroy(struct Tape *tape)
 {
-    struct Tzx* tzx = (struct Tzx*)(tape);
+    struct Tzx *tzx = (struct Tzx *)(tape);
     free(tzx->data);
     free(tzx);
 }
 
-static bool validate(uint8_t const* data, size_t const len)
+static bool validate(uint8_t const *data, size_t const len)
 {
     static const uint8_t expected_header[] = {'Z', 'X', 'T', 'a', 'p', 'e', '!', 0x1a};
 
@@ -97,9 +97,9 @@ static bool validate(uint8_t const* data, size_t const len)
     return true;
 }
 
-struct Tape* tzx_make(char const* filename)
+struct Tape *tzx_make(char const *filename)
 {
-    FILE* fp = fopen(filename, "rb");
+    FILE *fp = fopen(filename, "rb");
     if (!fp)
     {
         printf("cannot load \"%s\"\n", filename);
@@ -110,7 +110,7 @@ struct Tape* tzx_make(char const* filename)
     int const len = ftell(fp);
     fseek(fp, 0, SEEK_SET);
 
-    struct Tzx* tzx = malloc(sizeof(*tzx));
+    struct Tzx *tzx = malloc(sizeof(*tzx));
     tzx->data = malloc(len);
     tzx->current = tzx->data + 10;
     tzx->end = tzx->current + len;

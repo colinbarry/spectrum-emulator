@@ -9,8 +9,8 @@
 #define DISPLAY_WIDTH (PAPER_WIDTH + BORDER_SIZE + BORDER_SIZE)
 #define DISPLAY_HEIGHT (PAPER_HEIGHT + BORDER_SIZE + BORDER_SIZE)
 
-void display_render(uint32_t* surface,
-                    uint8_t const* bank,
+void display_render(uint32_t *surface,
+                    uint8_t const *bank,
                     uint8_t border_attr,
                     int invert_flash);
 

@@ -5,6 +5,6 @@
 
 struct Tape;
 
-struct Tape* tzx_make(char const* filename);
+struct Tape *tzx_make(char const *filename);
 
 #endif // SPECTRUM__TAPE_FORMATS__TZX_FORMAT_H_

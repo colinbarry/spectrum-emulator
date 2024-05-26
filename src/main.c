@@ -5,18 +5,18 @@
 #include "z80/z80.h"
 #include <stdio.h>
 
-SDL_Window* window;
-SDL_Renderer* renderer;
-SDL_Texture* texture;
+SDL_Window *window;
+SDL_Renderer *renderer;
+SDL_Texture *texture;
 
 struct Spectrum spectrum;
 
 static void blit(void)
 {
-    uint32_t* pixels;
+    uint32_t *pixels;
     int pitch;
 
-    SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch);
+    SDL_LockTexture(texture, NULL, (void **)&pixels, &pitch);
     spec_render_display(&spectrum, pixels);
     SDL_UnlockTexture(texture);
 
@@ -67,7 +67,7 @@ static void loop(void)
     }
 }
 
-static void fail(char const* msg)
+static void fail(char const *msg)
 {
     printf("%s: %s\n", msg, SDL_GetError());
     exit(EXIT_FAILURE);
@@ -87,7 +87,7 @@ static void cleanup(void)
     SDL_Quit();
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     atexit(cleanup);
 

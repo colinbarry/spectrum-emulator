@@ -7,20 +7,20 @@
 struct Tap
 {
     struct Tape tape;
-    uint8_t* data;
-    uint8_t* end;
-    uint8_t* current;
+    uint8_t *data;
+    uint8_t *end;
+    uint8_t *current;
 };
 
-static uint16_t readw(uint8_t const* data)
+static uint16_t readw(uint8_t const *data)
 {
     return *data | *(data + 1) << 8;
 }
 
-static void trace_blocks(uint8_t const* data, size_t const length)
+static void trace_blocks(uint8_t const *data, size_t const length)
 {
-    uint8_t const* b = data;
-    uint8_t const* e = data + length;
+    uint8_t const *b = data;
+    uint8_t const *e = data + length;
 
     while (b != e)
     {
@@ -62,11 +62,11 @@ static void trace_blocks(uint8_t const* data, size_t const length)
     }
 }
 
-static struct TapeBlock get_next_block(struct Tape* tape)
+static struct TapeBlock get_next_block(struct Tape *tape)
 {
-    struct Tap* tap = (struct Tap*)tape;
+    struct Tap *tap = (struct Tap *)tape;
 
-    uint8_t const* block = tap->current;
+    uint8_t const *block = tap->current;
     uint16_t block_length = readw(block);
     block += 2;
 
@@ -92,23 +92,23 @@ static struct TapeBlock get_next_block(struct Tape* tape)
     return valid_block(block_type, block_length - 2, block + 1);
 }
 
-static void destroy(struct Tape* tape)
+static void destroy(struct Tape *tape)
 {
-    struct Tap* tap = (struct Tap*)(tape);
+    struct Tap *tap = (struct Tap *)(tape);
     free(tap->data);
     free(tap);
 }
 
-struct Tape* tap_make(char const* filename)
+struct Tape *tap_make(char const *filename)
 {
-    FILE* fp = fopen(filename, "rb");
+    FILE *fp = fopen(filename, "rb");
     if (!fp)
     {
         printf("cannot load \"%s\"\n", filename);
         return NULL;
     }
 
-    struct Tap* tap = malloc(sizeof(*tap));
+    struct Tap *tap = malloc(sizeof(*tap));
 
     fseek(fp, 0, SEEK_END);
     int const len = ftell(fp);

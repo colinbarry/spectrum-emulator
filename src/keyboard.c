@@ -1,6 +1,6 @@
 #include "keyboard.h"
 
-static uint8_t pack_keypresses(struct Keyboard const* keyboard,
+static uint8_t pack_keypresses(struct Keyboard const *keyboard,
                                int k0,
                                int k1,
                                int k2,
@@ -14,12 +14,12 @@ static uint8_t pack_keypresses(struct Keyboard const* keyboard,
 
 //=============================================================================
 
-void kb_construct(struct Keyboard* self)
+void kb_construct(struct Keyboard *self)
 {
     memset(self, 0, sizeof(*self));
 }
 
-uint8_t kb_read(struct Keyboard const* self, uint16_t port)
+uint8_t kb_read(struct Keyboard const *self, uint16_t port)
 {
     uint8_t const row = port >> 8;
     uint8_t result = 0xff;
@@ -59,12 +59,12 @@ uint8_t kb_read(struct Keyboard const* self, uint16_t port)
     return result;
 }
 
-void kb_on_keydown(struct Keyboard* self, enum SpectrumKey const key)
+void kb_on_keydown(struct Keyboard *self, enum SpectrumKey const key)
 {
     self->keys[key] = true;
 }
 
-void kb_on_keyup(struct Keyboard* self, enum SpectrumKey const key)
+void kb_on_keyup(struct Keyboard *self, enum SpectrumKey const key)
 {
     self->keys[key] = false;
 }

@@ -54,11 +54,11 @@ struct Keyboard
     bool keys[40];
 };
 
-void kb_construct(struct Keyboard* self);
+void kb_construct(struct Keyboard *self);
 
-uint8_t kb_read(struct Keyboard const* self, uint16_t port);
+uint8_t kb_read(struct Keyboard const *self, uint16_t port);
 
-void kb_on_keydown(struct Keyboard* self, enum SpectrumKey key);
-void kb_on_keyup(struct Keyboard* self, enum SpectrumKey key);
+void kb_on_keydown(struct Keyboard *self, enum SpectrumKey key);
+void kb_on_keyup(struct Keyboard *self, enum SpectrumKey key);
 
 #endif // SPECTRUM_KEYBOARD_H

@@ -10,21 +10,21 @@ static const int64_t clock_speed = 3500000;
 static const int frames_per_second = 50;
 #define CYCLES_PER_FRAME (clock_speed / frames_per_second)
 
-static uint8_t mem_load(struct Z80* z80, uint16_t const addr)
+static uint8_t mem_load(struct Z80 *z80, uint16_t const addr)
 {
-    struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
+    struct Spectrum *spectrum = (struct Spectrum *)(z80->userdata);
     return mem_read(spectrum->memory, addr);
 }
 
-static void mem_store(struct Z80* z80, uint16_t const addr, uint8_t const value)
+static void mem_store(struct Z80 *z80, uint16_t const addr, uint8_t const value)
 {
-    struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
+    struct Spectrum *spectrum = (struct Spectrum *)(z80->userdata);
     mem_write(spectrum->memory, addr, value);
 }
 
-static uint8_t port_load(struct Z80* z80, uint16_t const port)
+static uint8_t port_load(struct Z80 *z80, uint16_t const port)
 {
-    struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
+    struct Spectrum *spectrum = (struct Spectrum *)(z80->userdata);
     if ((port & 0x01) == 0)
     {
         return kb_read(spectrum->keyboard, port);
@@ -35,9 +35,9 @@ static uint8_t port_load(struct Z80* z80, uint16_t const port)
     }
 }
 
-static void port_store(struct Z80* z80, uint16_t port, uint8_t const val)
+static void port_store(struct Z80 *z80, uint16_t port, uint8_t const val)
 {
-    struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
+    struct Spectrum *spectrum = (struct Spectrum *)(z80->userdata);
     if ((port & 0x01) == 0)
     {
         spectrum->border_attr = val & 0x07;
@@ -48,11 +48,11 @@ static void port_store(struct Z80* z80, uint16_t port, uint8_t const val)
     }
 }
 
-static uint8_t trap(struct Z80* z80, uint16_t addr, uint8_t const opcode)
+static uint8_t trap(struct Z80 *z80, uint16_t addr, uint8_t const opcode)
 {
     if (addr == 0x056b && opcode == 0xc0)
     {
-        struct Spectrum* spectrum = (struct Spectrum*)(z80->userdata);
+        struct Spectrum *spectrum = (struct Spectrum *)(z80->userdata);
         if (!spectrum->tape)
             return 1;
 
@@ -88,7 +88,7 @@ static uint8_t trap(struct Z80* z80, uint16_t addr, uint8_t const opcode)
 
 //=============================================================================
 
-void spec_construct(struct Spectrum* self, enum Model const model)
+void spec_construct(struct Spectrum *self, enum Model const model)
 {
     self->model = model;
     self->memory = malloc(sizeof(*self->memory));
@@ -111,7 +111,7 @@ void spec_construct(struct Spectrum* self, enum Model const model)
     self->z80->trap = &trap;
 }
 
-void spec_destruct(struct Spectrum* self)
+void spec_destruct(struct Spectrum *self)
 {
     mem_destruct(self->memory);
     if (self->tape)
@@ -121,7 +121,7 @@ void spec_destruct(struct Spectrum* self)
     free(self->memory);
 }
 
-bool spec_insert_tape(struct Spectrum* self, char const* filename)
+bool spec_insert_tape(struct Spectrum *self, char const *filename)
 {
     if (self->tape)
     {
@@ -133,9 +133,9 @@ bool spec_insert_tape(struct Spectrum* self, char const* filename)
     return self->tape;
 }
 
-void spec_load_rom(struct Spectrum* self, int const page, char const* filename)
+void spec_load_rom(struct Spectrum *self, int const page, char const *filename)
 {
-    FILE* romfile;
+    FILE *romfile;
     int length;
 
     if ((romfile = fopen(filename, "rb")) == NULL)
@@ -148,7 +148,7 @@ void spec_load_rom(struct Spectrum* self, int const page, char const* filename)
     length = ftell(romfile);
     fseek(romfile, 0, SEEK_SET);
 
-    uint8_t* buf = malloc(length);
+    uint8_t *buf = malloc(length);
     fread(buf, 1, length, romfile);
     mem_set_rom(self->memory, page & 0x01, buf, length);
     free(buf);
@@ -236,7 +236,7 @@ static struct Keys convert_keycode(SDL_Keycode const keycode)
     }
 }
 
-void spec_on_keydown(struct Spectrum* self, SDL_Keycode const key)
+void spec_on_keydown(struct Spectrum *self, SDL_Keycode const key)
 {
     struct Keys keys = convert_keycode(key);
     for (int i = 0; i < sizeof(keys.keys) / sizeof(int); ++i)
@@ -249,7 +249,7 @@ void spec_on_keydown(struct Spectrum* self, SDL_Keycode const key)
     }
 }
 
-void spec_on_keyup(struct Spectrum* self, SDL_Keycode const key)
+void spec_on_keyup(struct Spectrum *self, SDL_Keycode const key)
 {
     struct Keys keys = convert_keycode(key);
     for (int i = 0; i < sizeof(keys.keys) / sizeof(int); ++i)
@@ -262,7 +262,7 @@ void spec_on_keyup(struct Spectrum* self, SDL_Keycode const key)
     }
 }
 
-void spec_run(struct Spectrum* self, int cycles)
+void spec_run(struct Spectrum *self, int cycles)
 {
     while (cycles > 0)
     {
@@ -278,7 +278,7 @@ void spec_run(struct Spectrum* self, int cycles)
     }
 }
 
-void spec_render_display(struct Spectrum* self, uint32_t* surface)
+void spec_render_display(struct Spectrum *self, uint32_t *surface)
 {
     display_render(surface,
                    mem_screen(self->memory),

@@ -64,7 +64,7 @@ static const struct PortAndBit key_read_settings[40] = {
     /* spk_symbol_shift */ {0x7ffe, 0x01},
     /* spk_space */ {0x7ffe, 0x00}};
 
-static bool test_key_is_set(struct Keyboard const* keyboard,
+static bool test_key_is_set(struct Keyboard const *keyboard,
                             enum SpectrumKey const key)
 {
     struct PortAndBit const settings = key_read_settings[key];
@@ -72,7 +72,7 @@ static bool test_key_is_set(struct Keyboard const* keyboard,
            == (1 << settings.bit);
 }
 
-static bool test_key_is_reset(struct Keyboard const* keyboard,
+static bool test_key_is_reset(struct Keyboard const *keyboard,
                               enum SpectrumKey const key)
 {
     struct PortAndBit const settings = key_read_settings[key];

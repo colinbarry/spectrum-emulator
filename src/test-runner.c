@@ -4,7 +4,7 @@
 
 IMPORT_SUITE(keyboard);
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     BEGIN_TESTS();
     RUN_SUITE(keyboard);

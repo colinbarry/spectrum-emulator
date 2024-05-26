@@ -8,9 +8,9 @@ static uint32_t colour(uint8_t const attr)
     return r | (g << 8) | (b << 16) | (0xff << 24);
 }
 
-static void fill_rect(uint32_t* pixels, uint32_t const colour, int x, int y, int w, int h)
+static void fill_rect(uint32_t *pixels, uint32_t const colour, int x, int y, int w, int h)
 {
-    uint32_t* wr = pixels + y * DISPLAY_WIDTH + x;
+    uint32_t *wr = pixels + y * DISPLAY_WIDTH + x;
 
     for (int r = 0; r < h; ++r)
     {
@@ -25,8 +25,8 @@ static void fill_rect(uint32_t* pixels, uint32_t const colour, int x, int y, int
 
 //=============================================================================
 
-void display_render(uint32_t* surface,
-                    uint8_t const* memory,
+void display_render(uint32_t *surface,
+                    uint8_t const *memory,
                     uint8_t border_attr,
                     int invert_flash)
 {
@@ -51,7 +51,7 @@ void display_render(uint32_t* surface,
     {
         for (int c = 0; c < 32; ++c)
         {
-            uint32_t* wr = surface + DISPLAY_WIDTH * BORDER_SIZE + BORDER_SIZE
+            uint32_t *wr = surface + DISPLAY_WIDTH * BORDER_SIZE + BORDER_SIZE
                            + r * (DISPLAY_WIDTH * 8) + c * 8;
             uint8_t const attr = memory[0x1800 + r * 0x20 + c];
 
