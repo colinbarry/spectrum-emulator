@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+/** Enumeration of keys on the (48k) Spectrum keyboard.
+ */
 enum SpectrumKey
 {
     spk_1,
@@ -49,16 +51,30 @@ enum SpectrumKey
     spk_space
 };
 
+/** State of the keyboard keys.
+ */
 struct Keyboard
 {
     bool keys[40];
 };
 
+/** Initializes a Keyboard struct.
+ */
 void kb_construct(struct Keyboard *self);
 
+/** Returns the 8-bit key values representing the rows of keys in the given
+ * port.
+ * @param self The keyboard
+ * @param port The port corresponding to the keyboard row.
+ * @return Bitmask representing which keys in the row are depressed.
+ */
 uint8_t kb_read(struct Keyboard const *self, uint16_t port);
 
+/** Flags the given key as depressed.
+ */
 void kb_on_keydown(struct Keyboard *self, enum SpectrumKey key);
+/** Flags the given key as released.
+ */
 void kb_on_keyup(struct Keyboard *self, enum SpectrumKey key);
 
 #endif // SPECTRUM_KEYBOARD_H
